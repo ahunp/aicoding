@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/lib/toast";
+import Button from "@/components/ui/Button";
 
 export default function CheckoutButton() {
   const router = useRouter();
@@ -14,26 +16,29 @@ export default function CheckoutButton() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "下单失败");
+        toast(data.error || "下单失败", "error");
         return;
       }
 
+      toast("下单成功", "success");
       router.push(`/orders/${data.data.id}`);
       router.refresh();
     } catch {
-      alert("下单失败，请稍后重试");
+      toast("下单失败，请稍后重试", "error");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <button
+    <Button
       onClick={handleCheckout}
       disabled={loading}
-      className="mt-4 block w-full rounded bg-blue-600 px-6 py-3 text-center text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+      variant="accent"
+      size="lg"
+      className="mt-4 w-full"
     >
       {loading ? "下单中..." : "去结算"}
-    </button>
+    </Button>
   );
 }

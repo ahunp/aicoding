@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Package } from "lucide-react";
+import Button from "@/components/ui/Button";
 
 interface CartItemProps {
   item: {
@@ -42,38 +45,48 @@ export default function CartItemRow({ item }: CartItemProps) {
   }
 
   return (
-    <div className="flex items-center gap-4 border-b py-4">
-      <div className="flex h-16 w-16 items-center justify-center rounded bg-gray-50">
+    <div className="flex items-center gap-4 border-b border-border py-4">
+      <div className="relative h-16 w-16 shrink-0 rounded bg-muted">
         {item.product.imageUrl ? (
-          <img src={item.product.imageUrl} alt={item.product.name} className="h-full w-full object-contain p-1" />
+          <Image
+            src={item.product.imageUrl}
+            alt={item.product.name}
+            fill
+            className="object-contain p-1"
+            sizes="64px"
+          />
         ) : (
-          <span className="text-2xl">📦</span>
+          <div className="flex h-full items-center justify-center">
+            <Package className="h-8 w-8 text-muted-foreground" />
+          </div>
         )}
       </div>
 
       <div className="flex-1">
-        <p className="text-sm font-medium text-gray-900">{item.product.name}</p>
-        <p className="text-sm text-red-600">
+        <p className="text-sm font-medium text-foreground">{item.product.name}</p>
+        <p className="text-sm text-danger-500">
           ¥{item.product.price.toFixed(2)}
         </p>
       </div>
 
       <div className="flex items-center gap-2">
-        <button
+        <Button
           onClick={() => updateQuantity(qty - 1)}
           disabled={qty <= 1 || updating}
-          className="rounded border px-2 py-1 text-sm disabled:opacity-30"
+          variant="outline"
+          size="sm"
         >
           -
-        </button>
+        </Button>
         <span className="w-8 text-center text-sm">{qty}</span>
-        <button
+        <Button
           onClick={() => updateQuantity(qty + 1)}
           disabled={qty >= item.product.stock || updating}
-          className="rounded border px-2 py-1 text-sm disabled:opacity-30"
+          variant="outline"
+          size="sm"
         >
           +
-        </button>
+        </Button>
       </div>
 
       <p className="w-20 text-right text-sm font-medium">
@@ -82,7 +95,7 @@ export default function CartItemRow({ item }: CartItemProps) {
 
       <button
         onClick={removeItem}
-        className="text-sm text-red-500 hover:text-red-700"
+        className="text-sm text-danger-500 hover:text-danger-700"
       >
         删除
       </button>

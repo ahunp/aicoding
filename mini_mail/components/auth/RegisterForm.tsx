@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -50,67 +52,48 @@ export default function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="rounded bg-red-50 p-3 text-sm text-red-600">
+        <div className="rounded bg-danger-50 p-3 text-sm text-danger-500">
           {error}
         </div>
       )}
 
-      <div>
-        <label htmlFor="name" className="mb-1 block text-sm font-medium text-gray-700">
-          姓名 <span className="text-gray-400">（选填）</span>
-        </label>
-        <input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          placeholder="你的名字"
-        />
-      </div>
+      <Input
+        id="name"
+        type="text"
+        label={<span>姓名 <span className="text-muted-foreground">（选填）</span></span>}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="你的名字"
+      />
 
-      <div>
-        <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
-          邮箱
-        </label>
-        <input
-          id="email"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          placeholder="your@email.com"
-        />
-      </div>
+      <Input
+        id="email"
+        type="email"
+        label="邮箱"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="your@email.com"
+        required
+      />
 
-      <div>
-        <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
-          密码
-        </label>
-        <input
-          id="password"
-          type="password"
-          required
-          minLength={6}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-          placeholder="至少 6 位"
-        />
-      </div>
+      <Input
+        id="password"
+        type="password"
+        label="密码"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="至少 6 位"
+        minLength={6}
+        required
+      />
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-      >
+      <Button type="submit" disabled={loading} className="w-full">
         {loading ? "注册中..." : "注册"}
-      </button>
+      </Button>
 
-      <p className="text-center text-sm text-gray-500">
+      <p className="text-center text-sm text-muted-foreground">
         已有账号？{" "}
-        <a href="/login" className="text-blue-600 hover:underline">
+        <a href="/login" className="text-primary-600 hover:underline">
           登录
         </a>
       </p>

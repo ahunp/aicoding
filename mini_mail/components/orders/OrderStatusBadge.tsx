@@ -1,12 +1,17 @@
-import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/utils";
+import { ORDER_STATUS_LABELS } from "@/lib/utils";
+import Badge from "@/components/ui/Badge";
+
+const statusToVariant: Record<string, string> = {
+  PENDING: "pending",
+  PAID: "paid",
+  SHIPPED: "shipped",
+  DELIVERED: "delivered",
+  CANCELLED: "cancelled",
+};
 
 export default function OrderStatusBadge({ status }: { status: string }) {
-  const color = ORDER_STATUS_COLORS[status] || "bg-gray-100 text-gray-700";
+  const variant = statusToVariant[status] || "default";
   const label = ORDER_STATUS_LABELS[status] || status;
 
-  return (
-    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${color}`}>
-      {label}
-    </span>
-  );
+  return <Badge variant={variant as any}>{label}</Badge>;
 }

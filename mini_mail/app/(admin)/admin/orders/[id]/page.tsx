@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { formatPrice, formatDate, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/utils";
+import { formatPrice, formatDate, ORDER_STATUS_LABELS } from "@/lib/utils";
 import OrderStatusActions from "./OrderStatusActions";
+import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
 
 export default async function AdminOrderDetailPage({
   params,
@@ -22,84 +24,84 @@ export default async function AdminOrderDetailPage({
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">订单详情</h1>
-        <p className="mt-1 text-sm text-gray-500">ID: {order.id}</p>
+        <h1 className="text-2xl font-bold text-foreground">订单详情</h1>
+        <p className="mt-1 text-sm text-muted-foreground">ID: {order.id}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-lg bg-white p-6 shadow-sm">
+          <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <span className={`rounded-full px-3 py-1 text-sm font-medium ${ORDER_STATUS_COLORS[order.status]}`}>
+                <Badge variant={order.status.toLowerCase() as any}>
                   {ORDER_STATUS_LABELS[order.status]}
-                </span>
-                <p className="mt-2 text-xs text-gray-500">创建时间: {formatDate(order.createdAt)}</p>
+                </Badge>
+                <p className="mt-2 text-xs text-muted-foreground">创建时间: {formatDate(order.createdAt)}</p>
               </div>
               <OrderStatusActions orderId={order.id} currentStatus={order.status} />
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-lg bg-white shadow-sm">
-            <div className="border-b px-6 py-3">
-              <h2 className="font-medium text-gray-900">商品明细</h2>
+          <Card padding={false}>
+            <div className="border-b border-border px-6 py-3">
+              <h2 className="font-medium text-foreground">商品明细</h2>
             </div>
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-left">
+              <thead className="bg-muted text-left">
                 <tr>
-                  <th className="px-6 py-2 font-medium text-gray-600">商品</th>
-                  <th className="px-6 py-2 font-medium text-gray-600">单价</th>
-                  <th className="px-6 py-2 font-medium text-gray-600">数量</th>
-                  <th className="px-6 py-2 font-medium text-gray-600">小计</th>
+                  <th className="px-6 py-2 font-medium text-muted-foreground">商品</th>
+                  <th className="px-6 py-2 font-medium text-muted-foreground">单价</th>
+                  <th className="px-6 py-2 font-medium text-muted-foreground">数量</th>
+                  <th className="px-6 py-2 font-medium text-muted-foreground">小计</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-border">
                 {order.items.map((item) => (
                   <tr key={item.id}>
-                    <td className="px-6 py-3 text-gray-900">{item.productName}</td>
-                    <td className="px-6 py-3 text-gray-700">{formatPrice(item.productPrice)}</td>
-                    <td className="px-6 py-3 text-gray-700">{item.quantity}</td>
-                    <td className="px-6 py-3 text-gray-900">{formatPrice(item.subtotal)}</td>
+                    <td className="px-6 py-3 text-foreground">{item.productName}</td>
+                    <td className="px-6 py-3 text-muted-foreground">{formatPrice(item.productPrice)}</td>
+                    <td className="px-6 py-3 text-muted-foreground">{item.quantity}</td>
+                    <td className="px-6 py-3 text-foreground">{formatPrice(item.subtotal)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+          </Card>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="mb-3 font-medium text-gray-900">用户信息</h2>
+          <Card className="p-6">
+            <h2 className="mb-3 font-medium text-foreground">用户信息</h2>
             <div className="space-y-2 text-sm">
-              <p className="text-gray-700"><span className="text-gray-500">姓名: </span>{order.user?.name || "—"}</p>
-              <p className="text-gray-700"><span className="text-gray-500">邮箱: </span>{order.user?.email}</p>
-              <p className="text-gray-700"><span className="text-gray-500">累计消费: </span>{formatPrice(order.user?.totalSpent ?? 0)}</p>
-              <p className="text-gray-700"><span className="text-gray-500">会员等级: </span>{order.user?.membershipTier}</p>
+              <p className="text-foreground"><span className="text-muted-foreground">姓名: </span>{order.user?.name || "—"}</p>
+              <p className="text-foreground"><span className="text-muted-foreground">邮箱: </span>{order.user?.email}</p>
+              <p className="text-foreground"><span className="text-muted-foreground">累计消费: </span>{formatPrice(order.user?.totalSpent ?? 0)}</p>
+              <p className="text-foreground"><span className="text-muted-foreground">会员等级: </span>{order.user?.membershipTier}</p>
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="mb-3 font-medium text-gray-900">金额汇总</h2>
+          <Card className="p-6">
+            <h2 className="mb-3 font-medium text-foreground">金额汇总</h2>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-gray-700">
-                <span className="text-gray-500">商品总额</span>
+              <div className="flex justify-between text-foreground">
+                <span className="text-muted-foreground">商品总额</span>
                 <span>{formatPrice(order.totalAmount)}</span>
               </div>
-              <div className="flex justify-between text-gray-700">
-                <span className="text-gray-500">折扣</span>
-                <span className="text-red-600">-{formatPrice(order.discountAmount)}</span>
+              <div className="flex justify-between text-foreground">
+                <span className="text-muted-foreground">折扣</span>
+                <span className="text-danger-500">-{formatPrice(order.discountAmount)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">会员等级(下单时)</span>
-                <span className="text-gray-700">{order.membershipTierAtOrder}</span>
+                <span className="text-muted-foreground">会员等级(下单时)</span>
+                <span className="text-foreground">{order.membershipTierAtOrder}</span>
               </div>
-              <hr />
-              <div className="flex justify-between font-medium text-gray-900">
+              <hr className="border-border" />
+              <div className="flex justify-between font-medium text-foreground">
                 <span>实付金额</span>
                 <span className="text-lg">{formatPrice(order.finalAmount)}</span>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

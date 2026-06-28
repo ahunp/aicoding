@@ -1,17 +1,15 @@
-const tierColors: Record<string, string> = {
-  BRONZE: "bg-amber-100 text-amber-800",
-  SILVER: "bg-gray-100 text-gray-700",
-  GOLD: "bg-yellow-100 text-yellow-800",
-  PLATINUM: "bg-blue-100 text-blue-800",
-  DIAMOND: "bg-purple-100 text-purple-800",
+import Badge from "@/components/ui/Badge";
+
+const tierToVariant: Record<string, string> = {
+  BRONZE: "bronze",
+  SILVER: "silver",
+  GOLD: "gold",
+  PLATINUM: "platinum",
+  DIAMOND: "diamond",
 };
 
 export default function TierBadge({ tier, label }: { tier: string; label: string }) {
-  const color = tierColors[tier] || "bg-gray-100 text-gray-700";
+  const variant = tierToVariant[tier] || "default";
 
-  return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${color}`}>
-      {label}
-    </span>
-  );
+  return <Badge variant={variant as any}>{label}</Badge>;
 }

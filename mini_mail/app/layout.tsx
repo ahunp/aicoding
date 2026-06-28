@@ -3,6 +3,7 @@ import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import Toaster from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
   title: "Mini Mall",
@@ -15,12 +16,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
+    <html lang="zh-CN" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `(function(){try{var t=localStorage.getItem("theme")||(window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})()`
+        }} />
+      </head>
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <SessionProvider>
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <Toaster />
         </SessionProvider>
       </body>
     </html>

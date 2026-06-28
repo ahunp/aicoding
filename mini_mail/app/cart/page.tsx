@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import CartItemRow from "@/components/cart/CartItem";
 import CheckoutButton from "@/components/cart/CheckoutButton";
 import Link from "next/link";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
 
 export default async function CartPage() {
   const session = await auth();
@@ -22,36 +24,36 @@ export default async function CartPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">购物车</h1>
+      <h1 className="mb-6 text-2xl font-bold text-foreground">购物车</h1>
 
       {items.length === 0 ? (
-        <div className="rounded-lg bg-white p-12 text-center shadow-sm">
-          <p className="text-gray-500">购物车是空的</p>
+        <Card className="p-12 text-center">
+          <p className="text-muted-foreground">购物车是空的</p>
           <Link
             href="/products"
-            className="mt-4 inline-block rounded bg-blue-600 px-6 py-2 text-sm text-white hover:bg-blue-700"
+            className="mt-4 inline-block"
           >
-            去逛逛
+            <Button>去逛逛</Button>
           </Link>
-        </div>
+        </Card>
       ) : (
         <div className="space-y-4">
-          <div className="rounded-lg bg-white p-4 shadow-sm">
+          <Card>
             {items.map((item) => (
               <CartItemRow key={item.id} item={item} />
             ))}
-          </div>
+          </Card>
 
-          <div className="rounded-lg bg-white p-4 shadow-sm">
+          <Card>
             <div className="flex items-center justify-between">
-              <span className="text-base text-gray-600">合计</span>
-              <span className="text-xl font-bold text-red-600">
+              <span className="text-base text-muted-foreground">合计</span>
+              <span className="text-xl font-bold text-danger-500">
                 ¥{subtotal.toFixed(2)}
               </span>
             </div>
 
             <CheckoutButton />
-          </div>
+          </Card>
         </div>
       )}
     </div>

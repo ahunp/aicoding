@@ -1,10 +1,11 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import Link from "next/link";
 import ProductGrid from "@/components/products/ProductGrid";
 import ProductSearch from "@/components/products/ProductSearch";
 import CategoryFilter from "@/components/products/CategoryFilter";
 import Pagination from "@/components/products/Pagination";
+import Button from "@/components/ui/Button";
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -43,12 +44,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">全部商品</h1>
+        <h1 className="text-2xl font-bold text-foreground">全部商品</h1>
         <div className="flex items-center gap-3">
             <ProductSearch />
             <Link
             href="/products"
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-primary-600 hover:underline"
           >
             清空筛选
           </Link>
@@ -64,23 +65,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       <Pagination current={page} total={total} limit={limit} />
 
       {!session?.user && (
-        <div className="mt-8 rounded-lg bg-blue-50 p-6 text-center">
-          <p className="text-sm text-blue-800">
+        <div className="mt-8 rounded-lg bg-primary-50 p-6 text-center">
+          <p className="text-sm text-primary-700">
             登录后即可加入购物车和下单
           </p>
           <div className="mt-3 flex justify-center gap-3">
-            <Link
-              href="/login"
-              className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-            >
-              登录
-            </Link>
-            <Link
-              href="/register"
-              className="rounded bg-white px-4 py-2 text-sm text-blue-600 hover:bg-blue-50"
-            >
-              注册
-            </Link>
+            <Link href="/login"><Button variant="primary">登录</Button></Link>
+            <Link href="/register"><Button variant="outline">注册</Button></Link>
           </div>
         </div>
       )}

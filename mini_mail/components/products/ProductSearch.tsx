@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import Input from "@/components/ui/Input";
 
 export default function ProductSearch() {
   const router = useRouter();
@@ -22,12 +23,12 @@ export default function ProductSearch() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
+      <Input
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="搜索商品..."
-        className="w-48 rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+        className="w-48"
       />
     </form>
   );

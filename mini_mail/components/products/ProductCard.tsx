@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { Package } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
 
@@ -17,26 +19,30 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.id}`}
-      className="group rounded-lg border bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+      className="group rounded-lg border border-border bg-surface p-4 shadow-card transition-shadow hover:shadow-card-hover"
     >
-      <div className="mb-3 flex h-40 items-center justify-center rounded bg-gray-50">
+      <div className="mb-3 relative h-40 rounded bg-muted">
         {product.imageUrl ? (
-          <img
+          <Image
             src={product.imageUrl}
             alt={product.name}
-            className="h-full w-full object-contain p-2"
+            fill
+            className="object-contain p-2"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 25vw"
           />
         ) : (
-          <div className="text-4xl text-gray-300">📦</div>
+          <div className="flex h-full items-center justify-center">
+            <Package className="h-12 w-12 text-muted-foreground" />
+          </div>
         )}
       </div>
 
       <div className="space-y-1">
-        <h3 className="text-sm font-medium text-gray-900 group-hover:text-blue-600 line-clamp-2">
+        <h3 className="text-sm font-medium text-foreground group-hover:text-primary-600 line-clamp-2">
           {product.name}
         </h3>
 
-        <p className="text-lg font-bold text-red-600">
+        <p className="text-lg font-bold text-danger-500">
           {formatPrice(product.price)}
         </p>
 
@@ -44,7 +50,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.category && (
             <Badge>{product.category.name}</Badge>
           )}
-          <span className={`text-xs ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>
+          <span className={`text-xs ${product.stock > 0 ? "text-success-500" : "text-danger-500"}`}>
             {product.stock > 0 ? `库存 ${product.stock}` : "缺货"}
           </span>
         </div>

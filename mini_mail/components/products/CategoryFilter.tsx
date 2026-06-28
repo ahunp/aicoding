@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { cn } from "@/lib/utils";
+import Button from "@/components/ui/Button";
 
 interface Category {
   id: string;
@@ -13,7 +13,7 @@ export default function CategoryFilter({ categories }: { categories: Category[] 
   const searchParams = useSearchParams();
   const active = searchParams.get("category") || "";
 
-  function handleClick(categoryId: string) {
+  function navigate(categoryId: string) {
     const params = new URLSearchParams(searchParams.toString());
     if (categoryId === active) {
       params.delete("category");
@@ -26,35 +26,27 @@ export default function CategoryFilter({ categories }: { categories: Category[] 
 
   return (
     <div className="flex flex-wrap gap-2">
-      <button
+      <Button
         onClick={() => {
           const params = new URLSearchParams(searchParams.toString());
           params.delete("category");
           params.delete("page");
           router.push(`/products?${params.toString()}`);
         }}
-        className={cn(
-          "rounded-full px-4 py-1.5 text-sm transition-colors",
-          !active
-            ? "bg-blue-600 text-white"
-            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-        )}
+        variant={!active ? "primary" : "secondary"}
+        size="sm"
       >
         全部
-      </button>
+      </Button>
       {categories.map((cat) => (
-        <button
+        <Button
           key={cat.id}
-          onClick={() => handleClick(cat.id)}
-          className={cn(
-            "rounded-full px-4 py-1.5 text-sm transition-colors",
-            active === cat.id
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          )}
+          onClick={() => navigate(cat.id)}
+          variant={active === cat.id ? "primary" : "secondary"}
+          size="sm"
         >
           {cat.name}
-        </button>
+        </Button>
       ))}
     </div>
   );

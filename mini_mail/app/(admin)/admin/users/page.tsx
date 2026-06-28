@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { formatPrice, formatDate } from "@/lib/utils";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
 
 export default async function AdminUsersPage({
   searchParams,
@@ -30,48 +34,48 @@ export default async function AdminUsersPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">用户管理</h1>
+      <h1 className="mb-6 text-2xl font-bold text-foreground">用户管理</h1>
 
-      <form className="mb-4">
-        <input
+      <form className="mb-4 flex gap-2">
+        <Input
           name="search"
           defaultValue={search}
           placeholder="搜索用户名或邮箱..."
-          className="w-full max-w-xs rounded border border-gray-300 px-3 py-2 text-sm"
+          className="max-w-xs"
         />
-        <button type="submit" className="ml-2 rounded bg-gray-100 px-3 py-2 text-sm hover:bg-gray-200">搜索</button>
+        <Button type="submit" variant="secondary">搜索</Button>
       </form>
 
-      <div className="overflow-x-auto rounded-lg bg-white shadow-sm">
+      <Card className="overflow-x-auto" padding={false}>
         <table className="w-full text-sm">
-          <thead className="border-b bg-gray-50 text-left">
+          <thead className="border-b bg-muted text-left">
             <tr>
-              <th className="px-4 py-3 font-medium text-gray-600">姓名</th>
-              <th className="px-4 py-3 font-medium text-gray-600">邮箱</th>
-              <th className="px-4 py-3 font-medium text-gray-600">角色</th>
-              <th className="px-4 py-3 font-medium text-gray-600">累计消费</th>
-              <th className="px-4 py-3 font-medium text-gray-600">会员等级</th>
-              <th className="px-4 py-3 font-medium text-gray-600">注册时间</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">姓名</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">邮箱</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">角色</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">累计消费</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">会员等级</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">注册时间</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-border">
             {users.map((u) => (
-              <tr key={u.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-gray-900">{u.name || "—"}</td>
-                <td className="px-4 py-3 text-gray-700">{u.email}</td>
+              <tr key={u.id} className="hover:bg-muted">
+                <td className="px-4 py-3 text-foreground">{u.name || "—"}</td>
+                <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
                 <td className="px-4 py-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs ${u.role === "ADMIN" ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-700"}`}>
+                  <Badge variant={u.role === "ADMIN" ? "info" : "default"}>
                     {u.role === "ADMIN" ? "管理员" : "用户"}
-                  </span>
+                  </Badge>
                 </td>
-                <td className="px-4 py-3 text-gray-900">{formatPrice(u.totalSpent)}</td>
-                <td className="px-4 py-3 text-gray-700">{u.membershipTier}</td>
-                <td className="px-4 py-3 text-gray-500">{formatDate(u.createdAt)}</td>
+                <td className="px-4 py-3 text-foreground">{formatPrice(u.totalSpent)}</td>
+                <td className="px-4 py-3 text-muted-foreground">{u.membershipTier}</td>
+                <td className="px-4 py-3 text-muted-foreground">{formatDate(u.createdAt)}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
+      </Card>
 
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-center gap-2">
@@ -79,7 +83,7 @@ export default async function AdminUsersPage({
             <a
               key={p}
               href={`/admin/users?page=${p}${search ? `&search=${search}` : ""}`}
-              className={`rounded px-3 py-1 text-sm ${p === page ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+              className={`rounded px-3 py-1 text-sm ${p === page ? "bg-primary-600 text-white" : "bg-muted text-foreground hover:bg-muted-foreground/20"}`}
             >
               {p}
             </a>

@@ -2,6 +2,10 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatPrice, formatDate } from "@/lib/utils";
 import DeleteButton from "./DeleteButton";
+import Card from "@/components/ui/Card";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import Badge from "@/components/ui/Badge";
 
 export default async function AdminProductsPage({
   searchParams,
@@ -31,67 +35,53 @@ export default async function AdminProductsPage({
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">商品管理</h1>
-        <Link
-          href="/admin/products/new"
-          className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-        >
-          添加商品
+        <h1 className="text-2xl font-bold text-foreground">商品管理</h1>
+        <Link href="/admin/products/new">
+          <Button>添加商品</Button>
         </Link>
       </div>
 
-      <form className="mb-4">
-        <input
+      <form className="mb-4 flex gap-2">
+        <Input
           name="search"
           defaultValue={search}
           placeholder="搜索商品名称..."
-          className="w-full max-w-xs rounded border border-gray-300 px-3 py-2 text-sm"
+          className="max-w-xs"
         />
-        <button
-          type="submit"
-          className="ml-2 rounded bg-gray-100 px-3 py-2 text-sm hover:bg-gray-200"
-        >
-          搜索
-        </button>
+        <Button type="submit" variant="secondary">搜索</Button>
       </form>
 
-      <div className="overflow-x-auto rounded-lg bg-white shadow-sm">
+      <Card className="overflow-x-auto" padding={false}>
         <table className="w-full text-sm">
-          <thead className="border-b bg-gray-50 text-left">
+          <thead className="border-b bg-muted text-left">
             <tr>
-              <th className="px-4 py-3 font-medium text-gray-600">名称</th>
-              <th className="px-4 py-3 font-medium text-gray-600">分类</th>
-              <th className="px-4 py-3 font-medium text-gray-600">价格</th>
-              <th className="px-4 py-3 font-medium text-gray-600">库存</th>
-              <th className="px-4 py-3 font-medium text-gray-600">状态</th>
-              <th className="px-4 py-3 font-medium text-gray-600">创建时间</th>
-              <th className="px-4 py-3 font-medium text-gray-600">操作</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">名称</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">分类</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">价格</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">库存</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">状态</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">创建时间</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">操作</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-border">
             {products.map((p) => (
-              <tr key={p.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-gray-900">{p.name}</td>
-                <td className="px-4 py-3 text-gray-500">{p.category?.name}</td>
-                <td className="px-4 py-3 text-gray-900">{formatPrice(p.price)}</td>
+              <tr key={p.id} className="hover:bg-muted">
+                <td className="px-4 py-3 text-foreground">{p.name}</td>
+                <td className="px-4 py-3 text-muted-foreground">{p.category?.name}</td>
+                <td className="px-4 py-3 text-foreground">{formatPrice(p.price)}</td>
                 <td className="px-4 py-3">{p.stock}</td>
                 <td className="px-4 py-3">
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs ${
-                      p.isActive
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
+                  <Badge variant={p.isActive ? "success" : "danger"}>
                     {p.isActive ? "上架" : "下架"}
-                  </span>
+                  </Badge>
                 </td>
-                <td className="px-4 py-3 text-gray-500">{formatDate(p.createdAt)}</td>
+                <td className="px-4 py-3 text-muted-foreground">{formatDate(p.createdAt)}</td>
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
                     <Link
                       href={`/admin/products/${p.id}/edit`}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-primary-600 hover:text-primary-700"
                     >
                       编辑
                     </Link>
@@ -102,7 +92,7 @@ export default async function AdminProductsPage({
             ))}
           </tbody>
         </table>
-      </div>
+      </Card>
 
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-center gap-2">
@@ -112,8 +102,8 @@ export default async function AdminProductsPage({
               href={`/admin/products?page=${p}${search ? `&search=${search}` : ""}`}
               className={`rounded px-3 py-1 text-sm ${
                 p === page
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-primary-600 text-white"
+                  : "bg-muted text-foreground hover:bg-muted-foreground/20"
               }`}
             >
               {p}

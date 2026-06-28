@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { formatPrice, formatDate, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from "@/lib/utils";
+import { formatPrice, formatDate, ORDER_STATUS_LABELS } from "@/lib/utils";
+import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
 
 export default async function AdminOrdersPage({
   searchParams,
@@ -27,61 +29,60 @@ export default async function AdminOrdersPage({
 
   const totalPages = Math.ceil(total / limit);
   const statuses = ["", "PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"];
+  const statusLabels: Record<string, string> = { "": "全部", ...ORDER_STATUS_LABELS };
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">订单管理</h1>
+      <h1 className="mb-6 text-2xl font-bold text-foreground">订单管理</h1>
 
       <div className="mb-4 flex flex-wrap gap-2">
         {statuses.map((s) => (
           <Link
             key={s}
             href={`/admin/orders${s ? `?status=${s}` : ""}`}
-            className={`rounded-full px-3 py-1 text-sm ${
-              status === s
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+            className="inline-block"
           >
-            {s ? ORDER_STATUS_LABELS[s] : "全部"}
+            <Badge variant={s === status ? "paid" : "default"}>
+              {statusLabels[s]}
+            </Badge>
           </Link>
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-lg bg-white shadow-sm">
+      <Card className="overflow-x-auto" padding={false}>
         <table className="w-full text-sm">
-          <thead className="border-b bg-gray-50 text-left">
+          <thead className="border-b bg-muted text-left">
             <tr>
-              <th className="px-4 py-3 font-medium text-gray-600">订单号</th>
-              <th className="px-4 py-3 font-medium text-gray-600">用户</th>
-              <th className="px-4 py-3 font-medium text-gray-600">金额</th>
-              <th className="px-4 py-3 font-medium text-gray-600">状态</th>
-              <th className="px-4 py-3 font-medium text-gray-600">时间</th>
-              <th className="px-4 py-3 font-medium text-gray-600">操作</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">订单号</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">用户</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">金额</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">状态</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">时间</th>
+              <th className="px-4 py-3 font-medium text-muted-foreground">操作</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-border">
             {orders.map((o) => (
-              <tr key={o.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-mono text-xs text-gray-900">
+              <tr key={o.id} className="hover:bg-muted">
+                <td className="px-4 py-3 font-mono text-xs text-foreground">
                   {o.id.slice(0, 8)}...
                 </td>
-                <td className="px-4 py-3 text-gray-900">
+                <td className="px-4 py-3 text-foreground">
                   {o.user?.name || o.user?.email}
                 </td>
-                <td className="px-4 py-3 text-gray-900">
+                <td className="px-4 py-3 text-foreground">
                   {formatPrice(o.finalAmount)}
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs ${ORDER_STATUS_COLORS[o.status]}`}>
+                  <Badge variant={o.status.toLowerCase() as any}>
                     {ORDER_STATUS_LABELS[o.status]}
-                  </span>
+                  </Badge>
                 </td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-muted-foreground">
                   {formatDate(o.createdAt)}
                 </td>
                 <td className="px-4 py-3">
-                  <Link href={`/admin/orders/${o.id}`} className="text-blue-600 hover:text-blue-800">
+                  <Link href={`/admin/orders/${o.id}`} className="text-primary-600 hover:text-primary-700">
                     详情
                   </Link>
                 </td>
@@ -89,7 +90,7 @@ export default async function AdminOrdersPage({
             ))}
           </tbody>
         </table>
-      </div>
+      </Card>
 
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-center gap-2">
@@ -98,7 +99,7 @@ export default async function AdminOrdersPage({
               key={p}
               href={`/admin/orders?page=${p}${status ? `&status=${status}` : ""}`}
               className={`rounded px-3 py-1 text-sm ${
-                p === page ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                p === page ? "bg-primary-600 text-white" : "bg-muted text-foreground hover:bg-muted-foreground/20"
               }`}
             >
               {p}

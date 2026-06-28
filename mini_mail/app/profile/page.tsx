@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getTierConfig, getNextTier } from "@/lib/membership";
 import MembershipCard from "@/components/membership/MembershipCard";
+import Card from "@/components/ui/Card";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -30,27 +31,27 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">个人中心</h1>
+      <h1 className="mb-6 text-2xl font-bold text-foreground">个人中心</h1>
 
       <div className="space-y-4">
-        <div className="rounded-lg bg-white p-4 shadow-sm">
+        <Card>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">姓名</span>
-              <span className="text-gray-900">{user.name || "未设置"}</span>
+              <span className="text-muted-foreground">姓名</span>
+              <span className="text-foreground">{user.name || "未设置"}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">邮箱</span>
-              <span className="text-gray-900">{user.email}</span>
+              <span className="text-muted-foreground">邮箱</span>
+              <span className="text-foreground">{user.email}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">角色</span>
-              <span className="text-gray-900">
+              <span className="text-muted-foreground">角色</span>
+              <span className="text-foreground">
                 {user.role === "ADMIN" ? "管理员" : "普通用户"}
               </span>
             </div>
           </div>
-        </div>
+        </Card>
 
         <MembershipCard data={membershipData} />
       </div>

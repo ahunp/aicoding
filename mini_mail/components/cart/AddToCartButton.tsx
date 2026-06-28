@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Check } from "lucide-react";
+import { toast } from "@/lib/toast";
+import Button from "@/components/ui/Button";
 
 export default function AddToCartButton({
   productId,
@@ -10,46 +12,82 @@ export default function AddToCartButton({
   productId: string;
   disabled?: boolean;
 }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [added, setAdded] = useState(false);
+  const [inCart, setInCart] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const interactedRef = useRef(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/cart", { signal: controller.signal })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.data && !interactedRef.current) {
+          setInCart(data.data.some((item: any) => item.productId === productId));
+        }
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [productId]);
 
   async function handleAdd() {
     setLoading(true);
+    interactedRef.current = true;
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, quantity: 1 }),
+        body: JSON.stringify({ productId, quantity }),
       });
 
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "添加失败");
+        toast(data.error || "添加失败", "error");
         return;
       }
 
-      setAdded(true);
-      router.refresh();
-      setTimeout(() => setAdded(false), 2000);
+      setInCart(true);
+      toast("已加入购物车", "success");
     } catch {
-      alert("添加失败");
+      toast("添加失败", "error");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <button
-      onClick={handleAdd}
-      disabled={disabled || loading}
-      className={`w-full rounded px-6 py-3 text-sm font-medium transition-colors ${
-        added
-          ? "bg-green-500 text-white"
-          : "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300"
-      }`}
-    >
-      {loading ? "添加中..." : added ? "已加入购物车 ✓" : "加入购物车"}
-    </button>
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-muted-foreground">数量：</span>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            disabled={quantity <= 1}
+            className="flex h-8 w-8 items-center justify-center rounded border border-border text-sm hover:bg-muted disabled:opacity-30"
+          >
+            -
+          </button>
+          <span className="flex h-8 w-10 items-center justify-center text-sm font-medium">
+            {quantity}
+          </span>
+          <button
+            onClick={() => setQuantity((q) => q + 1)}
+            className="flex h-8 w-8 items-center justify-center rounded border border-border text-sm hover:bg-muted"
+          >
+            +
+          </button>
+        </div>
+      </div>
+
+      <Button
+        onClick={handleAdd}
+        disabled={disabled || loading}
+        variant={inCart ? "success" : "primary"}
+        size="lg"
+        className="w-full"
+      >
+        {loading ? "添加中..." : inCart ? <><Check className="mr-1 h-4 w-4" /> 已加入购物车</> : "加入购物车"}
+      </Button>
+    </div>
   );
 }

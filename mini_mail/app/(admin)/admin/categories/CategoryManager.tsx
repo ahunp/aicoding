@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 
 interface Category {
   id: string;
@@ -98,70 +101,62 @@ export default function CategoryManager({ categories }: { categories: Category[]
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleCreate} className="rounded-lg bg-white p-4 shadow-sm">
-        <h2 className="mb-3 text-sm font-medium text-gray-900">新建分类</h2>
-        <div className="space-y-3">
-          <input
+      <Card>
+        <h2 className="mb-3 text-sm font-medium text-foreground">新建分类</h2>
+        <form onSubmit={handleCreate} className="space-y-3">
+          <Input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="分类名称"
-            className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
             required
           />
-          <input
+          <Input
             type="text"
             value={newDesc}
             onChange={(e) => setNewDesc(e.target.value)}
             placeholder="描述（可选）"
-            className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded bg-blue-600 px-4 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
-          >
+          <Button type="submit" disabled={loading}>
             {loading ? "创建中..." : "创建"}
-          </button>
-        </div>
-      </form>
+          </Button>
+        </form>
+      </Card>
 
       <div className="space-y-2">
         {categories.map((cat) => (
-          <div key={cat.id} className="rounded-lg bg-white p-4 shadow-sm">
+          <Card key={cat.id}>
             {editingId === cat.id ? (
               <div className="space-y-3">
-                <input
+                <Input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
                 />
-                <input
+                <Input
                   type="text"
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
                 />
                 <div className="flex gap-2">
-                  <button onClick={() => handleUpdate(cat.id)} className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">保存</button>
-                  <button onClick={() => setEditingId(null)} className="rounded bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200">取消</button>
+                  <Button onClick={() => handleUpdate(cat.id)}>保存</Button>
+                  <Button variant="secondary" onClick={() => setEditingId(null)}>取消</Button>
                 </div>
               </div>
             ) : (
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-sm font-medium text-gray-900">{cat.name}</span>
-                  {cat.description && <span className="ml-2 text-xs text-gray-500">{cat.description}</span>}
-                  <span className="ml-2 text-xs text-gray-400">({cat._count.products} 商品)</span>
+                  <span className="text-sm font-medium text-foreground">{cat.name}</span>
+                  {cat.description && <span className="ml-2 text-xs text-muted-foreground">{cat.description}</span>}
+                  <span className="ml-2 text-xs text-muted-foreground">({cat._count.products} 商品)</span>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => startEdit(cat)} className="text-xs text-blue-600 hover:text-blue-800">编辑</button>
-                  <button onClick={() => handleDelete(cat.id, cat._count.products)} className="text-xs text-red-600 hover:text-red-800">删除</button>
+                  <Button variant="ghost" size="sm" onClick={() => startEdit(cat)}>编辑</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(cat.id, cat._count.products)} className="text-danger-500">删除</Button>
                 </div>
               </div>
             )}
-          </div>
+          </Card>
         ))}
       </div>
     </div>

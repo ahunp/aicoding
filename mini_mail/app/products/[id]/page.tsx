@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import Image from "next/image";
+import { Package } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
 import AddToCartButton from "@/components/cart/AddToCartButton";
@@ -26,15 +28,17 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="grid gap-8 md:grid-cols-2">
         {/* Image */}
-        <div className="flex items-center justify-center rounded-lg bg-white p-8 shadow-sm">
+        <div className="relative flex items-center justify-center rounded-lg bg-surface shadow-card min-h-80">
           {product.imageUrl ? (
-            <img
+            <Image
               src={product.imageUrl}
               alt={product.name}
-              className="max-h-80 object-contain"
+              fill
+              className="object-contain p-4"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           ) : (
-            <div className="text-8xl text-gray-300">📦</div>
+            <Package className="h-24 w-24 text-muted" />
           )}
         </div>
 
@@ -44,18 +48,18 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             <Badge>{product.category.name}</Badge>
           )}
 
-          <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{product.name}</h1>
 
-          <p className="text-3xl font-bold text-red-600">
+          <p className="text-3xl font-bold text-danger-500">
             {formatPrice(product.price)}
           </p>
 
-          <p className={`text-sm ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>
+          <p className={`text-sm ${product.stock > 0 ? "text-success-500" : "text-danger-500"}`}>
             {product.stock > 0 ? `库存: ${product.stock} 件` : "暂时缺货"}
           </p>
 
           {product.description && (
-            <p className="text-sm leading-relaxed text-gray-600">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               {product.description}
             </p>
           )}
@@ -65,8 +69,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           )}
 
           {!session?.user && (
-            <p className="text-sm text-gray-500">
-              请先<a href="/login" className="text-blue-600 hover:underline"> 登录 </a>
+            <p className="text-sm text-muted-foreground">
+              请先<a href="/login" className="text-primary-600 hover:underline"> 登录 </a>
               以加入购物车
             </p>
           )}
