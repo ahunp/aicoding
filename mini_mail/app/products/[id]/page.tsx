@@ -47,7 +47,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
 
           <p className="text-3xl font-bold text-red-600">
-            ¥{formatPrice(product.price)}
+            {formatPrice(product.price)}
           </p>
 
           <p className={`text-sm ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>

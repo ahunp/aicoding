@@ -37,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </h3>
 
         <p className="text-lg font-bold text-red-600">
-          ¥{formatPrice(product.price)}
+          {formatPrice(product.price)}
         </p>
 
         <div className="flex items-center justify-between">

@@ -1,0 +1,86 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { z } from "zod";
+
+const updateSchema = z.object({
+  name: z.string().min(1, "商品名称不能为空").optional(),
+  price: z.number().positive("价格必须大于 0").optional(),
+  description: z.string().optional(),
+  imageUrl: z.string().optional(),
+  stock: z.number().int().min(0, "库存不能为负数").optional(),
+  categoryId: z.string().min(1, "分类不能为空").optional(),
+  isActive: z.boolean().optional(),
+});
+
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "无权限" }, { status: 403 });
+  }
+
+  const { id } = await params;
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { category: true },
+  });
+
+  if (!product) {
+    return NextResponse.json({ error: "商品不存在" }, { status: 404 });
+  }
+
+  return NextResponse.json({ data: product });
+}
+
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "无权限" }, { status: 403 });
+  }
+
+  const { id } = await params;
+  const body = await req.json();
+  const parsed = updateSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0].message },
+      { status: 400 }
+    );
+  }
+
+  const data: Record<string, unknown> = { ...parsed.data };
+  if (data.name) {
+    data.slug = String(data.name)
+      .toLowerCase()
+      .replace(/[^a-z0-9一-鿿]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  const product = await prisma.product.update({
+    where: { id },
+    data,
+  });
+
+  return NextResponse.json({ data: product });
+}
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return NextResponse.json({ error: "无权限" }, { status: 403 });
+  }
+
+  const { id } = await params;
+  await prisma.product.delete({ where: { id } });
+  return NextResponse.json({ data: null });
+}
