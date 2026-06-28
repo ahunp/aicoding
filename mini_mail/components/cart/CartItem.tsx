@@ -64,7 +64,7 @@ export default function CartItemRow({ item }: CartItemProps) {
 
       <div className="flex-1">
         <p className="text-sm font-medium text-foreground">{item.product.name}</p>
-        <p className="text-sm text-danger-500">
+        <p className="text-sm text-price">
           ¥{item.product.price.toFixed(2)}
         </p>
       </div>

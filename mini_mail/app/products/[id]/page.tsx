@@ -50,7 +50,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
           <h1 className="text-2xl font-bold text-foreground">{product.name}</h1>
 
-          <p className="text-3xl font-bold text-danger-500">
+          <p className="text-3xl font-bold text-price">
             {formatPrice(product.price)}
           </p>
 

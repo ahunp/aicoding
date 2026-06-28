@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Mail, Lock } from "lucide-react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
@@ -37,7 +38,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="rounded bg-danger-50 p-3 text-sm text-danger-500">
+        <div className="rounded-lg border-l-4 border-danger-500 bg-danger-50 p-3 text-sm text-danger-500">
           {error}
         </div>
       )}
@@ -46,6 +47,7 @@ export default function LoginForm() {
         id="email"
         type="email"
         label="邮箱"
+        icon={Mail}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="your@email.com"
@@ -56,6 +58,7 @@ export default function LoginForm() {
         id="password"
         type="password"
         label="密码"
+        icon={Lock}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="••••••"

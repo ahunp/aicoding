@@ -80,7 +80,7 @@ export default async function OrderDetailPage({
           </div>
           <div className="mt-2 flex items-center justify-between border-t pt-2">
             <span className="font-medium text-foreground">实付金额</span>
-            <span className="text-lg font-bold text-danger-500">
+            <span className="text-lg font-bold text-price">
               ¥{order.finalAmount.toFixed(2)}
             </span>
           </div>

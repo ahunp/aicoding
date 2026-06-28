@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { ShoppingCart } from "lucide-react";
 import CartItemRow from "@/components/cart/CartItem";
 import CheckoutButton from "@/components/cart/CheckoutButton";
 import Link from "next/link";
@@ -28,6 +29,9 @@ export default async function CartPage() {
 
       {items.length === 0 ? (
         <Card className="p-12 text-center">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+            <ShoppingCart className="h-10 w-10 text-muted-foreground/40" />
+          </div>
           <p className="text-muted-foreground">购物车是空的</p>
           <Link
             href="/products"
@@ -47,7 +51,7 @@ export default async function CartPage() {
           <Card>
             <div className="flex items-center justify-between">
               <span className="text-base text-muted-foreground">合计</span>
-              <span className="text-xl font-bold text-danger-500">
+              <span className="text-xl font-bold text-price">
                 ¥{subtotal.toFixed(2)}
               </span>
             </div>

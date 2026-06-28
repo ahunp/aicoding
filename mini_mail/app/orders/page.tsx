@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { Package } from "lucide-react";
 import Link from "next/link";
 import OrderStatusBadge from "@/components/orders/OrderStatusBadge";
 import Card from "@/components/ui/Card";
@@ -22,6 +23,9 @@ export default async function OrdersPage() {
 
       {orders.length === 0 ? (
         <Card className="p-12 text-center">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+            <Package className="h-10 w-10 text-muted-foreground/40" />
+          </div>
           <p className="text-muted-foreground">暂无订单</p>
           <Link href="/products" className="mt-4 inline-block">
             <Button>去购物</Button>
@@ -47,7 +51,7 @@ export default async function OrdersPage() {
                   </div>
                   <div className="text-right">
                     <OrderStatusBadge status={order.status} />
-                    <p className="mt-1 text-sm font-bold text-danger-500">
+                    <p className="mt-1 text-sm font-bold text-price">
                       ¥{order.finalAmount.toFixed(2)}
                     </p>
                   </div>
