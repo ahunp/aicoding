@@ -14,7 +14,7 @@ export default async function Header() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 text-lg font-bold text-primary-600">
             <Store className="h-5 w-5" />
-            <span className="hidden sm:inline">Mini Mall</span>
+            <span className="hidden sm:inline">简购</span>
           </Link>
           <nav className="hidden items-center gap-6 sm:flex">
             <Link href="/products" className="text-sm text-muted-foreground transition-colors hover:text-foreground">

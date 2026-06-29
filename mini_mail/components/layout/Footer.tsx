@@ -9,9 +9,9 @@ export default function Footer() {
         <div className="grid gap-8 sm:grid-cols-3">
           {/* Brand */}
           <div>
-            <h3 className="text-lg font-bold text-foreground">Mini Mall</h3>
+            <h3 className="text-lg font-bold text-foreground">简购</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              精选优质商品，享受会员折扣。微型电商示例项目。
+              精选优质商品，享受会员折扣。
             </p>
           </div>
 
@@ -41,7 +41,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground">
-          &copy; {year} Mini Mall. 微型电商项目.
+          &copy; {year} 简购. 精选好物，简单购物.
         </div>
       </div>
     </footer>

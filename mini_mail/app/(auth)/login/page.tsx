@@ -12,8 +12,8 @@ export default async function LoginPage() {
       {/* Decorative panel - hidden on mobile */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-primary-600 to-primary-800 items-center justify-center p-12">
         <div className="text-center text-white">
-          <h2 className="text-3xl font-bold">Mini Mall</h2>
-          <p className="mt-4 text-white/70">发现精选好物，享受会员折扣</p>
+          <h2 className="text-3xl font-bold">简购</h2>
+          <p className="mt-4 text-white/70">精选好物，简单购物</p>
           <div className="mt-8 flex justify-center gap-3">
             <div className="h-16 w-16 rounded-full bg-white/10" />
             <div className="h-16 w-16 rounded-full bg-white/15" />

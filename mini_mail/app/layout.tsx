@@ -6,8 +6,8 @@ import Footer from "@/components/layout/Footer";
 import Toaster from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
-  title: "Mini Mall",
-  description: "微型电商项目 - Mini Mall",
+  title: "简购",
+  description: "精选好物，简单购物",
 };
 
 export default function RootLayout({

@@ -75,7 +75,7 @@ export default function HomePage() {
             发现精选好物
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
-            从数码到家居，精选优质商品，尽在 Mini Mall
+            从数码到家居，精选优质商品，尽在简购
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
