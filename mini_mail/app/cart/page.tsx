@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
 import CartItemRow from "@/components/cart/CartItem";
 import CheckoutButton from "@/components/cart/CheckoutButton";
+import ClearCartButton from "@/components/cart/ClearCartButton";
 import Link from "next/link";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -25,7 +26,10 @@ export default async function CartPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-foreground">购物车</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">购物车</h1>
+        {items.length > 0 && <ClearCartButton />}
+      </div>
 
       {items.length === 0 ? (
         <Card className="p-12 text-center">

@@ -12,7 +12,7 @@ export async function GET() {
   try {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { totalSpent: true, membershipTier: true },
+      select: { name: true, email: true, createdAt: true, totalSpent: true, membershipTier: true },
     });
 
     if (!user) {
@@ -23,14 +23,17 @@ export async function GET() {
     const nextTier = getNextTier(currentTier.name);
 
     const data = {
-      currentTier: currentTier.name,
-      currentLabel: currentTier.label,
-      discountPct: currentTier.discountPct,
-      totalSpent: user.totalSpent,
-      nextTier: nextTier
-        ? { name: nextTier.name, label: nextTier.label, minSpent: nextTier.minSpent }
-        : null,
-      amountToNext: nextTier ? Math.max(0, nextTier.minSpent - user.totalSpent) : 0,
+      user: { name: user.name, email: user.email, createdAt: user.createdAt, totalSpent: user.totalSpent, membershipTier: user.membershipTier },
+      membership: {
+        currentTier: currentTier.name,
+        currentLabel: currentTier.label,
+        discountPct: currentTier.discountPct,
+        totalSpent: user.totalSpent,
+        nextTier: nextTier
+          ? { name: nextTier.name, label: nextTier.label, minSpent: nextTier.minSpent }
+          : null,
+        amountToNext: nextTier ? Math.max(0, nextTier.minSpent - user.totalSpent) : 0,
+      },
     };
 
     return NextResponse.json({ data });

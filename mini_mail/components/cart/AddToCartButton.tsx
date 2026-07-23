@@ -47,6 +47,7 @@ export default function AddToCartButton({
       }
 
       setInCart(true);
+      window.dispatchEvent(new CustomEvent("cart-updated"));
       toast("已加入购物车", "success");
     } catch {
       toast("添加失败", "error");
@@ -67,9 +68,19 @@ export default function AddToCartButton({
           >
             -
           </button>
-          <span className="flex h-8 w-10 items-center justify-center text-sm font-medium">
-            {quantity}
-          </span>
+          <input
+            type="number"
+            value={quantity}
+            min={1}
+            onChange={(e) => {
+              const v = parseInt(e.target.value);
+              if (!isNaN(v) && v >= 1) setQuantity(v);
+            }}
+            onBlur={() => {
+              if (!quantity || quantity < 1) setQuantity(1);
+            }}
+            className="h-8 w-14 rounded border border-border bg-transparent text-center text-sm font-medium [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          />
           <button
             onClick={() => setQuantity((q) => q + 1)}
             className="flex h-8 w-8 items-center justify-center rounded border border-border text-sm hover:bg-muted"

@@ -25,3 +25,12 @@ export function getNextTier(tierName: TierName) {
 export function getTierName(totalSpent: number): TierName {
   return getTierConfig(totalSpent).name;
 }
+
+export function getTierLabel(tierName: string): string {
+  const tier = MEMBERSHIP_TIERS.find((t) => t.name === tierName);
+  return tier?.label ?? tierName;
+}
+
+export function getTierIndex(tierName: string): number {
+  return MEMBERSHIP_TIERS.findIndex((t) => t.name === tierName);
+}

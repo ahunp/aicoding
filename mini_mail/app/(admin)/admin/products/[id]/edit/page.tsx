@@ -29,6 +29,10 @@ export default async function EditProductPage({
           stock: product.stock,
           categoryId: product.categoryId ?? "",
           isActive: product.isActive,
+          isMemberExclusive: product.isMemberExclusive,
+          isFlashDeal: product.isFlashDeal,
+          flashDealDiscount: product.flashDealDiscount,
+          flashDealEndsAt: product.flashDealEndsAt instanceof Date ? product.flashDealEndsAt.toISOString().slice(0, 16) : "",
         }}
       />
     </div>

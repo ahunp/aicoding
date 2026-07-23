@@ -18,7 +18,7 @@ export async function GET() {
   return NextResponse.json({ data: orders });
 }
 
-export async function POST() {
+export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "请先登录" }, { status: 401 });
@@ -26,6 +26,12 @@ export async function POST() {
 
   try {
     const userId = session.user.id;
+    const { addressId } = await req.json().catch(() => ({}));
+
+    // Resolve address
+    const address = addressId
+      ? await prisma.address.findFirst({ where: { id: addressId, userId } })
+      : null;
 
     // Fetch user with cart items
     const user = await prisma.user.findUnique({
@@ -64,6 +70,10 @@ export async function POST() {
         }
       }
 
+      const addressSnapshot = address
+        ? JSON.stringify({ name: address.name, phone: address.phone, province: address.province, city: address.city, district: address.district, detail: address.detail })
+        : "";
+
       const newOrder = await tx.order.create({
         data: {
           userId,
@@ -71,6 +81,7 @@ export async function POST() {
           discountAmount,
           finalAmount,
           membershipTierAtOrder: tier.name,
+          addressSnapshot,
           items: {
             create: cartItems.map((item) => ({
               productId: item.product.id,

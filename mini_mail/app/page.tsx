@@ -1,21 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Package, ArrowRight } from "lucide-react";
+import { ArrowRight, Package } from "lucide-react";
 import { motion } from "framer-motion";
-import { buttonVariants } from "@/components/ui/Button";
-import Badge from "@/components/ui/Badge";
-import { formatPrice } from "@/lib/utils";
+import ProductCard from "@/components/products/ProductCard";
+import HeroSearch from "@/components/home/HeroSearch";
+import QuickNav from "@/components/home/QuickNav";
+import FlashDeals from "@/components/home/FlashDeals";
+import CategoryRow from "@/components/home/CategoryRow";
+import MemberZone from "@/components/home/MemberZone";
+import TrustBar from "@/components/home/TrustBar";
+import RecentlyViewed from "@/components/products/RecentlyViewed";
 
 interface Product {
   id: string;
   name: string;
   price: number;
   imageUrl: string | null;
+  stock: number;
   category: { name: string } | null;
+  flashDealDiscount?: number;
+  flashDealEndsAt?: string | null;
+  isMemberExclusive?: boolean;
 }
 
 interface Category {
@@ -24,45 +32,42 @@ interface Category {
   description: string | null;
 }
 
+interface HomeData {
+  flashDeals: Product[];
+  newArrivals: Product[];
+  memberProducts: Product[];
+  categoryRows: { category: Category; products: Product[] }[];
+  minTierForExclusive: string;
+}
+
 export default function HomePage() {
   const { data: session } = useSession();
-  const [featured, setFeatured] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [data, setData] = useState<HomeData | null>(null);
 
   useEffect(() => {
     const ac = new AbortController();
-    fetch("/api/products?limit=4&sort=latest", { signal: ac.signal })
+    fetch("/api/home", { signal: ac.signal })
       .then((r) => r.json())
       .then((d) => {
-        if (d.data) setFeatured(d.data);
+        if (d.data) setData(d.data);
       })
       .catch(() => {});
-
-    fetch("/api/categories", { signal: ac.signal })
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.data) setCategories(d.data);
-      })
-      .catch(() => {});
-
     return () => ac.abort();
   }, []);
 
+  const heroProduct = data?.flashDeals?.[0];
+
   return (
     <div>
-      {/* Hero */}
+      {/* ── ① Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-accent-600 py-24 md:py-36">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-accent-500/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-primary-400/10 blur-3xl" />
-
-        {/* Floating decorative circles */}
         <div className="pointer-events-none absolute left-1/4 top-20 h-6 w-6 rounded-full bg-white/10 animate-float" style={{ animationDelay: "0s" }} />
         <div className="pointer-events-none absolute right-1/3 top-32 h-4 w-4 rounded-full bg-accent-300/20 animate-float" style={{ animationDelay: "0.8s" }} />
         <div className="pointer-events-none absolute left-2/3 bottom-24 h-5 w-5 rounded-full bg-white/15 animate-float" style={{ animationDelay: "1.6s" }} />
         <div className="pointer-events-none absolute right-1/4 bottom-32 h-3 w-3 rounded-full bg-accent-400/20 animate-float" style={{ animationDelay: "2.4s" }} />
-
-        {/* SVG pattern overlay */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNCI+PHBhdGggZD0iTTM2IDM0djItSDJWMTdsMnYxNXoiLz48cGF0aCBkPSJNMzYgMzR2LThoMnY2aC0yeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
 
         <motion.div
@@ -71,26 +76,52 @@ export default function HomePage() {
           transition={{ duration: 0.6 }}
           className="relative mx-auto max-w-7xl px-4 text-center"
         >
-          <h1 className="text-4xl font-bold tracking-tight text-white md:text-6xl [text-shadow:0_2px_12px_rgb(0_0_0_/_0.3)]">
-            发现精选好物
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
-            从数码到家居，精选优质商品，尽在简购
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/products"
-              className="inline-flex items-center justify-center rounded-full bg-accent-500 px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-primary-900/20 transition-all duration-200 hover:bg-accent-600 hover:shadow-xl hover:shadow-primary-900/30 active:scale-[0.97]"
-            >
-              立即选购 <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-8 py-3.5 text-base font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 active:scale-[0.97]"
-            >
-              注册账号
-            </Link>
-          </div>
+          <HeroSearch />
+
+          {session?.user ? (
+            <>
+              <h1 className="text-3xl font-bold tracking-tight text-white md:text-5xl [text-shadow:0_2px_12px_rgb(0_0_0_/_0.3)]">
+                你好，{session.user.name || "用户"} 👋
+              </h1>
+              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
+                为你精选好物，看看今天有什么值得买的吧
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <Link
+                  href="/products"
+                  className="inline-flex items-center justify-center rounded-full bg-accent-500 px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-primary-900/20 transition-all duration-200 hover:bg-accent-600 active:scale-[0.97]"
+                >
+                  去购物 <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-4xl font-bold tracking-tight text-white md:text-6xl [text-shadow:0_2px_12px_rgb(0_0_0_/_0.3)]">
+                发现精选好物
+              </h1>
+              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
+                从数码到家居，精选优质商品，尽在简购
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <Link
+                  href="/products"
+                  className="inline-flex items-center justify-center rounded-full bg-accent-500 px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-primary-900/20 transition-all duration-200 hover:bg-accent-600 active:scale-[0.97]"
+                >
+                  立即选购 <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-8 py-3.5 text-base font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 active:scale-[0.97]"
+                >
+                  登录
+                </Link>
+              </div>
+              <p className="mt-4 text-sm text-white/50">
+                没有账号？<Link href="/register" className="text-white/80 underline hover:text-white">立即注册</Link>
+              </p>
+            </>
+          )}
         </motion.div>
 
         {/* Scroll indicator */}
@@ -113,107 +144,55 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* Featured Products */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-foreground">精选好物</h2>
-          <Link href="/products" className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
-            查看全部 <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
+      {/* ── ② QuickNav ──────────────────────────────────────────── */}
+      <QuickNav />
 
-        {featured.length === 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {Array.from({ length: 4 }, (_, i) => (
-              <div key={i} className="h-64 animate-pulse rounded-lg bg-muted" />
-            ))}
+      {/* ── ③ Flash Deals ──────────────────────────────────────── */}
+      {data?.flashDeals && <FlashDeals products={data.flashDeals} />}
+
+      {/* ── ④ New Arrivals ─────────────────────────────────────── */}
+      {data?.newArrivals && data.newArrivals.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="flex h-5 w-0.5 rounded-full bg-primary-500" />
+              <h2 className="text-lg font-bold text-foreground">✨ 新品首发</h2>
+            </div>
+            <Link
+              href="/products?section=new"
+              className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-primary-600"
+            >
+              查看更多 <ArrowRight className="h-3 w-3" />
+            </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {featured.map((product, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {data.newArrivals.map((product, i) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.08 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
               >
-                <Link
-                  href={`/products/${product.id}`}
-                  className="group block rounded-lg border border-border bg-surface p-4 shadow-card transition-shadow hover:shadow-card-hover"
-                >
-                  <div className="mb-3 relative h-40 rounded bg-muted">
-                    {product.imageUrl ? (
-                      <Image src={product.imageUrl} alt={product.name} fill className="object-contain p-2" sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 25vw" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <Package className="h-12 w-12 text-muted-foreground" />
-                      </div>
-                    )}
-                  </div>
-                  <h3 className="text-sm font-medium text-foreground group-hover:text-primary-600 line-clamp-2">
-                    {product.name}
-                  </h3>
-                  <p className="mt-1 text-lg font-bold text-price">
-                    {formatPrice(product.price)}
-                  </p>
-                  {product.category && (
-                    <Badge className="mt-1">{product.category.name}</Badge>
-                  )}
-                </Link>
+                <ProductCard product={product} />
               </motion.div>
             ))}
           </div>
-        )}
-      </section>
-
-      {/* Category Cards */}
-      <section className="bg-muted py-16">
-        <div className="mx-auto max-w-7xl px-4">
-          <h2 className="mb-8 text-2xl font-bold text-foreground">商品分类</h2>
-          {categories.length === 0 ? (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
-              {Array.from({ length: 5 }, (_, i) => (
-                <div key={i} className="h-24 animate-pulse rounded-lg bg-surface" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/products?category=${cat.id}`}
-                  className="group rounded-lg bg-surface p-6 text-center shadow-card transition-shadow hover:shadow-card-hover"
-                >
-                  <p className="text-sm font-medium text-foreground group-hover:text-primary-600">
-                    {cat.name}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    浏览商品
-                  </p>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* CTA Banner — 未登录时显示 */}
-      {!session?.user && (
-        <section className="mx-auto max-w-7xl px-4 py-16 text-center">
-          <div className="rounded-2xl bg-gradient-to-r from-primary-600 to-primary-800 p-12">
-            <h2 className="text-2xl font-bold text-white">准备好开始购物了吗？</h2>
-            <p className="mt-2 text-white/80">注册账号，立即享受会员折扣</p>
-            <Link
-              href="/register"
-              className="mt-6 inline-block"
-            >
-              <span className={buttonVariants({ variant: "accent", size: "lg", className: "text-base" })}>
-                立即注册
-              </span>
-            </Link>
-          </div>
         </section>
       )}
+
+      {/* ── ⑤ Category Rows ────────────────────────────────────── */}
+      {data?.categoryRows?.map((row) => (
+        <CategoryRow key={row.category.id} category={row.category} products={row.products} />
+      ))}
+
+      {/* ── ⑥ Member Zone ──────────────────────────────────────── */}
+      <MemberZone products={data?.memberProducts ?? []} minTier={data?.minTierForExclusive ?? "GOLD"} />
+
+      {/* ── ⑦ Recently Viewed ──────────────────────────────────── */}
+      <RecentlyViewed />
+
+      {/* ── ⑧ Trust Bar ────────────────────────────────────────── */}
+      <TrustBar />
     </div>
   );
 }

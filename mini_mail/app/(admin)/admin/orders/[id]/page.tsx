@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { formatPrice, formatDate, ORDER_STATUS_LABELS } from "@/lib/utils";
+import { getTierLabel } from "@/lib/membership";
 import OrderStatusActions from "./OrderStatusActions";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
@@ -76,9 +77,26 @@ export default async function AdminOrderDetailPage({
               <p className="text-foreground"><span className="text-muted-foreground">姓名: </span>{order.user?.name || "—"}</p>
               <p className="text-foreground"><span className="text-muted-foreground">邮箱: </span>{order.user?.email}</p>
               <p className="text-foreground"><span className="text-muted-foreground">累计消费: </span>{formatPrice(order.user?.totalSpent ?? 0)}</p>
-              <p className="text-foreground"><span className="text-muted-foreground">会员等级: </span>{order.user?.membershipTier}</p>
+              <p className="text-foreground"><span className="text-muted-foreground">会员等级: </span>{getTierLabel(order.user?.membershipTier ?? "")}</p>
             </div>
           </Card>
+
+          {order.addressSnapshot && (
+            <Card className="p-6">
+              <h2 className="mb-2 font-medium text-foreground">收货地址</h2>
+              {(() => {
+                try {
+                  const a = JSON.parse(order.addressSnapshot);
+                  return (
+                    <div className="text-sm text-muted-foreground space-y-0.5">
+                      <p><span className="text-foreground">{a.name}</span> {a.phone}</p>
+                      <p>{a.province}{a.city}{a.district} {a.detail}</p>
+                    </div>
+                  );
+                } catch { return <p className="text-sm text-muted-foreground">—</p>; }
+              })()}
+            </Card>
+          )}
 
           <Card className="p-6">
             <h2 className="mb-3 font-medium text-foreground">金额汇总</h2>
@@ -93,7 +111,7 @@ export default async function AdminOrderDetailPage({
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">会员等级(下单时)</span>
-                <span className="text-foreground">{order.membershipTierAtOrder}</span>
+                <span className="text-foreground">{getTierLabel(order.membershipTierAtOrder)}</span>
               </div>
               <hr className="border-border" />
               <div className="flex justify-between font-medium text-foreground">

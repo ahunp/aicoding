@@ -23,6 +23,10 @@ interface ProductFormProps {
     stock: number;
     categoryId: string;
     isActive: boolean;
+    isMemberExclusive?: boolean;
+    isFlashDeal?: boolean;
+    flashDealDiscount?: number;
+    flashDealEndsAt?: string | null;
   };
 }
 
@@ -38,6 +42,10 @@ export default function ProductForm({ categories, initial }: ProductFormProps) {
     stock: initial?.stock ?? 0,
     categoryId: initial?.categoryId ?? "",
     isActive: initial?.isActive ?? true,
+    isMemberExclusive: initial?.isMemberExclusive ?? false,
+    isFlashDeal: initial?.isFlashDeal ?? false,
+    flashDealDiscount: initial?.flashDealDiscount ?? 20,
+    flashDealEndsAt: initial?.flashDealEndsAt ?? "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -148,6 +156,48 @@ export default function ProductForm({ categories, initial }: ProductFormProps) {
           />
           上架
         </label>
+
+        <label className="mt-2 flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.isMemberExclusive}
+            onChange={(e) => setForm({ ...form, isMemberExclusive: e.target.checked })}
+            className="rounded border-border"
+          />
+          <span className="text-purple-600 font-medium">会员专享</span>
+        </label>
+
+        <label className="mt-2 flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.isFlashDeal}
+            onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })}
+            className="rounded border-border"
+          />
+          <span className="text-danger-500 font-medium">限时抢购</span>
+        </label>
+
+        {form.isFlashDeal && (
+          <div className="mt-3 space-y-3 rounded-lg border border-danger-200 bg-danger-50/30 p-3">
+            <p className="text-xs font-medium text-danger-600">抢购配置</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                label="折扣 (%)"
+                type="number"
+                min="0"
+                max="100"
+                value={form.flashDealDiscount}
+                onChange={(e) => setForm({ ...form, flashDealDiscount: parseInt(e.target.value) || 0 })}
+              />
+              <Input
+                label="截止时间"
+                type="datetime-local"
+                value={form.flashDealEndsAt}
+                onChange={(e) => setForm({ ...form, flashDealEndsAt: e.target.value })}
+              />
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 flex gap-3">
           <Button type="submit" disabled={loading}>

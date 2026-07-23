@@ -37,11 +37,13 @@ export default function CartItemRow({ item }: CartItemProps) {
     setQty(newQty);
     setUpdating(false);
     router.refresh();
+    window.dispatchEvent(new CustomEvent("cart-updated"));
   }
 
   async function removeItem() {
     await fetch(`/api/cart/${item.id}`, { method: "DELETE" });
     router.refresh();
+    window.dispatchEvent(new CustomEvent("cart-updated"));
   }
 
   return (

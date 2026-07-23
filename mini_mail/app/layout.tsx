@@ -4,10 +4,17 @@ import SessionProvider from "@/components/SessionProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Toaster from "@/components/ui/Toast";
+import BackToTop from "@/components/ui/BackToTop";
 
 export const metadata: Metadata = {
-  title: "简购",
-  description: "精选好物，简单购物",
+  title: { default: "简购 - 精选好物，简单购物", template: "%s - 简购" },
+  description: "简购是一个精选电商平台，从数码到家居，精选优质商品，享受会员折扣。",
+  openGraph: {
+    title: "简购 - 精选好物，简单购物",
+    description: "从数码到家居，精选优质商品，尽在简购。",
+    type: "website",
+    locale: "zh_CN",
+  },
 };
 
 export default function RootLayout({
@@ -36,6 +43,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
           <Toaster />
+          <BackToTop />
         </SessionProvider>
       </body>
     </html>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import type { Prisma } from "@prisma/client";
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -12,8 +13,28 @@ export async function GET(req: Request) {
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit")) || 20));
   const status = searchParams.get("status") || "";
+  const search = searchParams.get("search") || "";
+  const dateFrom = searchParams.get("dateFrom") || "";
+  const dateTo = searchParams.get("dateTo") || "";
 
-  const where = status ? { status } : {};
+  const where: Prisma.OrderWhereInput = {
+    ...(status ? { status } : {}),
+    ...(search
+      ? {
+          OR: [
+            { id: { contains: search } },
+            { user: { name: { contains: search } } },
+            { user: { email: { contains: search } } },
+          ],
+        }
+      : {}),
+    ...(dateFrom || dateTo ? {
+      createdAt: {
+        ...(dateFrom ? { gte: new Date(dateFrom) } : {}),
+        ...(dateTo ? { lte: new Date(dateTo + "T23:59:59.999Z") } : {}),
+      },
+    } : {}),
+  };
 
   const [orders, total] = await Promise.all([
     prisma.order.findMany({

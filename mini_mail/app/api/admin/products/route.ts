@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
+import type { Prisma } from "@prisma/client";
 
 const productSchema = z.object({
   name: z.string().min(1, "商品名称不能为空"),
@@ -11,6 +12,10 @@ const productSchema = z.object({
   stock: z.number().int().min(0, "库存不能为负数").default(0),
   categoryId: z.string().min(1, "分类不能为空"),
   isActive: z.boolean().optional().default(true),
+  isMemberExclusive: z.boolean().optional().default(false),
+  isFlashDeal: z.boolean().optional().default(false),
+  flashDealDiscount: z.number().int().min(0).max(100).optional().default(0),
+  flashDealEndsAt: z.string().optional().nullable(),
 });
 
 export async function GET(req: Request) {
@@ -24,17 +29,31 @@ export async function GET(req: Request) {
   const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit")) || 20));
   const search = searchParams.get("search") || "";
   const categoryId = searchParams.get("categoryId") || "";
+  const priceMin = searchParams.get("priceMin");
+  const priceMax = searchParams.get("priceMax");
+  const sortBy = searchParams.get("sortBy") || "createdAt";
+  const sortOrder = searchParams.get("sortOrder") || "desc";
 
-  const where = {
+  const where: Prisma.ProductWhereInput = {
     ...(search ? { name: { contains: search } } : {}),
     ...(categoryId ? { categoryId } : {}),
+    ...(priceMin || priceMax ? {
+      price: {
+        ...(priceMin ? { gte: parseFloat(priceMin) } : {}),
+        ...(priceMax ? { lte: parseFloat(priceMax) } : {}),
+      },
+    } : {}),
   };
+
+  const validSortFields = ["createdAt", "price", "stock", "name"];
+  const field = validSortFields.includes(sortBy) ? sortBy : "createdAt";
+  const order = sortOrder === "asc" ? "asc" : "desc";
 
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
       include: { category: true },
-      orderBy: { createdAt: "desc" },
+      orderBy: { [field]: order },
       skip: (page - 1) * limit,
       take: limit,
     }),
@@ -65,8 +84,14 @@ export async function POST(req: Request) {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 
+  const createData: Record<string, unknown> = { ...parsed.data, slug };
+  if (createData.flashDealEndsAt !== undefined && createData.flashDealEndsAt !== null && createData.flashDealEndsAt !== "") {
+    const raw = String(createData.flashDealEndsAt);
+    createData.flashDealEndsAt = raw.includes("T") ? new Date(raw + ":00") : new Date(raw);
+  }
+
   const product = await prisma.product.create({
-    data: { ...parsed.data, slug },
+    data: createData as any,
   });
 
   return NextResponse.json({ data: product }, { status: 201 });

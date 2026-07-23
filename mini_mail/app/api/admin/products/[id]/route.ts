@@ -11,6 +11,10 @@ const updateSchema = z.object({
   stock: z.number().int().min(0, "库存不能为负数").optional(),
   categoryId: z.string().min(1, "分类不能为空").optional(),
   isActive: z.boolean().optional(),
+  isMemberExclusive: z.boolean().optional(),
+  isFlashDeal: z.boolean().optional(),
+  flashDealDiscount: z.number().int().min(0).max(100).optional(),
+  flashDealEndsAt: z.string().optional().nullable(),
 });
 
 export async function GET(
@@ -61,6 +65,11 @@ export async function PUT(
       .replace(/[^a-z0-9一-鿿]+/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
+  }
+  // Convert datetime-local string to Date object for Prisma
+  if (data.flashDealEndsAt !== undefined && data.flashDealEndsAt !== null) {
+    const raw = String(data.flashDealEndsAt);
+    data.flashDealEndsAt = raw.includes("T") ? new Date(raw + ":00") : new Date(raw);
   }
 
   const product = await prisma.product.update({

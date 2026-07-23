@@ -2,13 +2,24 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 export default function UserMenu() {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (!session?.user) return;
+    fetch("/api/orders")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.data) setPendingCount(d.data.filter((o: any) => o.status === "PENDING").length);
+      })
+      .catch(() => {});
+  }, [session]);
 
   if (!session?.user) {
     return (
@@ -49,10 +60,15 @@ export default function UserMenu() {
             </Link>
             <Link
               href="/orders"
-              className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
+              className="flex items-center justify-between px-4 py-2 text-sm text-foreground hover:bg-muted"
               onClick={() => setOpen(false)}
             >
-              我的订单
+              <span>我的订单</span>
+              {pendingCount > 0 && (
+                <span className="rounded-full bg-warning-100 px-2 py-0.5 text-[10px] font-medium text-warning-700">
+                  {pendingCount} 笔待付款
+                </span>
+              )}
             </Link>
             {session.user.role === "ADMIN" && (
               <Link

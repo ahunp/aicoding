@@ -28,15 +28,23 @@ export default function Footer() {
               <Link href="/orders" className="text-sm text-muted-foreground transition-colors hover:text-primary-600">
                 我的订单
               </Link>
+              <Link href="/help" className="text-sm text-muted-foreground transition-colors hover:text-primary-600">
+                帮助中心
+              </Link>
             </nav>
           </div>
 
           {/* About */}
           <div>
             <h4 className="text-sm font-semibold text-foreground">关于</h4>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              使用 Next.js 16 + TailwindCSS 4 + Prisma 构建。
-            </p>
+            <nav className="mt-3 flex flex-col gap-2">
+              <Link href="/about" className="text-sm text-muted-foreground transition-colors hover:text-primary-600">
+                关于简购
+              </Link>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Next.js 16 + TailwindCSS 4 + Prisma.
+              </p>
+            </nav>
           </div>
         </div>
 

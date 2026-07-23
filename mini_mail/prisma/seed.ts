@@ -52,7 +52,11 @@ async function main() {
     { name: "简约桌面收纳笔筒", price: 25, stock: 200, cat: 4 },
   ];
 
-  for (const p of products) {
+  // 会员专享商品索引（高价商品）
+  const memberExclusiveIndices = new Set([2, 4, 6]); // 机械键盘、运动鞋、台灯
+
+  for (let i = 0; i < products.length; i++) {
+    const p = products[i];
     await prisma.product.create({
       data: {
         name: p.name,
@@ -66,6 +70,7 @@ async function main() {
         imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
         description: `这是"${p.name}"，精选优质材料，品质保证。`,
         categoryId: categories[p.cat].id,
+        isMemberExclusive: memberExclusiveIndices.has(i),
       },
     });
   }

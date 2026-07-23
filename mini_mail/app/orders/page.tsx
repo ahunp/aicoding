@@ -34,12 +34,8 @@ export default async function OrdersPage() {
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <Link
-              key={order.id}
-              href={`/orders/${order.id}`}
-              className="block transition-shadow hover:shadow-card-hover"
-            >
-              <Card className="transition-shadow hover:shadow-card-hover">
+            <div key={order.id} className="block">
+              <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">
@@ -48,16 +44,30 @@ export default async function OrdersPage() {
                     <p className="text-sm font-medium text-foreground">
                       {order.items.length} 件商品
                     </p>
+                    <Link
+                      href={`/orders/${order.id}`}
+                      className="text-xs text-muted-foreground hover:text-primary-600"
+                    >
+                      查看详情 →
+                    </Link>
                   </div>
                   <div className="text-right">
                     <OrderStatusBadge status={order.status} />
                     <p className="mt-1 text-sm font-bold text-price">
                       ¥{order.finalAmount.toFixed(2)}
                     </p>
+                    {order.status === "PENDING" && (
+                      <Link
+                        href={`/orders/${order.id}/pay`}
+                        className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-accent-600 hover:text-accent-700"
+                      >
+                        去付款 →
+                      </Link>
+                    )}
                   </div>
                 </div>
               </Card>
-            </Link>
+            </div>
           ))}
         </div>
       )}

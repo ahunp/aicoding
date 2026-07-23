@@ -45,12 +45,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.role = (user as { role: string }).role;
       }
+      // Refresh name from DB so renames reflect immediately.
+      // Fails silently in Edge (middleware) where Prisma isn't available.
+      if (token.id) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { name: true },
+          });
+          if (dbUser) token.name = dbUser.name;
+        } catch {
+          /* Edge runtime — use cached name */
+        }
+      }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.name = token.name as string | null;
       }
       return session;
     },
