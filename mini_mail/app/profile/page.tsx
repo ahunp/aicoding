@@ -18,6 +18,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [membershipData, setMembershipData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Edit name
   const [editName, setEditName] = useState("");
@@ -38,15 +39,23 @@ export default function ProfilePage() {
 
   async function fetchUser() {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/user");
+      if (!res.ok) {
+        setError("API 返回 " + res.status + " " + res.statusText);
+        return;
+      }
       const json = await res.json();
       if (json.data?.user) {
         setUser(json.data.user);
         setEditName(json.data.user.name || "");
         setMembershipData(json.data.membership);
+      } else {
+        setError(json.error || "未知错误");
       }
     } catch {
+      setError("网络请求失败");
       setUser(null);
     } finally {
       setLoading(false);
@@ -102,7 +111,7 @@ export default function ProfilePage() {
     }
   }
 
-  if (loading || !user) {
+  if (loading) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8">
         <div className="space-y-4">
@@ -113,6 +122,20 @@ export default function ProfilePage() {
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-8">
+        <Card className="p-6 text-center">
+          <p className="text-danger-500 font-medium">加载失败</p>
+          <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+          <Button onClick={fetchUser} className="mt-4">重试</Button>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   const finalMembershipData = membershipData || (() => {
     const ct = getTierConfig(user.totalSpent || 0);
