@@ -3,9 +3,25 @@
 
 html {
   font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  scroll-behavior: smooth;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading, var(--font-sans));
   letter-spacing: 0.02em;
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-primary-500) 25%, transparent);
+}
+
+.thin-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
 }

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import Card from "@/components/ui/Card";
+import DashboardCharts from "./DashboardCharts";
 
 async function getDashboard() {
   const todayStart = new Date();
@@ -143,6 +144,10 @@ export default async function AdminDashboard() {
             ))}
           </div>
         </Card>
+      </div>
+
+      <div className="mt-6">
+        <DashboardCharts />
       </div>
     </div>
   );

@@ -89,7 +89,7 @@ export default function HomePage() {
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <Link
                   href="/products"
-                  className="inline-flex items-center justify-center rounded-full bg-accent-500 px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-primary-900/20 transition-all duration-200 hover:bg-accent-600 active:scale-[0.97]"
+                  className="inline-flex items-center justify-center rounded-full bg-accent-500 px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-accent-500/30 transition-all duration-200 hover:bg-accent-600 hover:shadow-xl hover:shadow-accent-500/40 active:scale-[0.97]"
                 >
                   去购物 <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -106,7 +106,7 @@ export default function HomePage() {
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <Link
                   href="/products"
-                  className="inline-flex items-center justify-center rounded-full bg-accent-500 px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-primary-900/20 transition-all duration-200 hover:bg-accent-600 active:scale-[0.97]"
+                  className="inline-flex items-center justify-center rounded-full bg-accent-500 px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-accent-500/30 transition-all duration-200 hover:bg-accent-600 hover:shadow-xl hover:shadow-accent-500/40 active:scale-[0.97]"
                 >
                   立即选购 <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>

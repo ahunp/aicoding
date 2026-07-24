@@ -70,7 +70,8 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const parsed = productSchema.safeParse(body);
+  const { images, ...rest } = body;
+  const parsed = productSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0].message },
@@ -91,8 +92,30 @@ export async function POST(req: Request) {
   }
 
   const product = await prisma.product.create({
-    data: createData as any,
+    data: {
+      ...createData,
+      images: Array.isArray(images) && images.length > 0
+        ? { create: images.map((url: string, i: number) => ({ url, sort: i })) }
+        : undefined,
+    } as any,
   });
 
   return NextResponse.json({ data: product }, { status: 201 });
+}
+
+// Batch operations
+export async function PATCH(req: Request) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "ADMIN") return NextResponse.json({ error: "无权限" }, { status: 403 });
+  const { ids, action, price } = await req.json();
+  if (!Array.isArray(ids) || ids.length === 0) return NextResponse.json({ error: "请选择商品" }, { status: 400 });
+  switch (action) {
+    case "activate": await prisma.product.updateMany({ where: { id: { in: ids } }, data: { isActive: true } }); return NextResponse.json({ data: { updated: ids.length } });
+    case "deactivate": await prisma.product.updateMany({ where: { id: { in: ids } }, data: { isActive: false } }); return NextResponse.json({ data: { updated: ids.length } });
+    case "price":
+      if (typeof price !== "number" || price <= 0) return NextResponse.json({ error: "无效价格" }, { status: 400 });
+      await prisma.product.updateMany({ where: { id: { in: ids } }, data: { price } });
+      return NextResponse.json({ data: { updated: ids.length } });
+    default: return NextResponse.json({ error: "不支持的操作" }, { status: 400 });
+  }
 }

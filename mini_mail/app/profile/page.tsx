@@ -39,7 +39,7 @@ export default function ProfilePage() {
   async function fetchUser() {
     setLoading(true);
     try {
-      const res = await fetch("/api/membership");
+      const res = await fetch("/api/user");
       const json = await res.json();
       if (json.data?.user) {
         setUser(json.data.user);

@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import Image from "next/image";
 import { Package, Crown } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
@@ -11,6 +10,7 @@ import ReviewList from "@/components/products/ReviewList";
 import ReviewStars from "@/components/products/ReviewStars";
 import FavoriteButton from "@/components/products/FavoriteButton";
 import TrackView from "@/components/products/TrackView";
+import ProductImageCarousel from "@/components/products/ProductImageCarousel";
 import { getTierLabel, getTierIndex } from "@/lib/membership";
 
 interface ProductDetailPageProps {
@@ -23,7 +23,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
   const product = await prisma.product.findUnique({
     where: { id },
-    include: { category: true },
+    include: { category: true, images: { orderBy: { sort: "asc" } } },
   });
 
   if (!product || !product.isActive) {
@@ -79,20 +79,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2">
-        {/* Image */}
-        <div className="relative flex items-center justify-center rounded-lg bg-surface shadow-card min-h-80">
-          {product.imageUrl ? (
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              className="object-contain p-4"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-          ) : (
-            <Package className="h-24 w-24 text-muted" />
-          )}
-        </div>
+        {/* Image carousel */}
+        <ProductImageCarousel
+          images={product.images.length > 0 ? product.images.map((i) => i.url) : (product.imageUrl ? [product.imageUrl] : [])}
+          alt={product.name}
+        />
 
         {/* Info */}
         <div className="space-y-4">

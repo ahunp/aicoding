@@ -27,7 +27,7 @@ export default function MemberZone({ products, minTier }: MemberZoneProps) {
 
   useEffect(() => {
     if (session?.user) {
-      fetch("/api/membership")
+      fetch("/api/user")
         .then((r) => r.json())
         .then((d) => {
           if (d.data?.membership?.currentTier) setUserTier(d.data.membership.currentTier);

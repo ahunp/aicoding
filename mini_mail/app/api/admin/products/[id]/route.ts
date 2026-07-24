@@ -50,7 +50,8 @@ export async function PUT(
 
   const { id } = await params;
   const body = await req.json();
-  const parsed = updateSchema.safeParse(body);
+  const { images, ...rest } = body;
+  const parsed = updateSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0].message },
@@ -72,9 +73,23 @@ export async function PUT(
     data.flashDealEndsAt = raw.includes("T") ? new Date(raw + ":00") : new Date(raw);
   }
 
-  const product = await prisma.product.update({
-    where: { id },
-    data,
+  const product = await prisma.$transaction(async (tx) => {
+    const updated = await tx.product.update({
+      where: { id },
+      data,
+    });
+
+    if (Array.isArray(images)) {
+      await tx.productImage.deleteMany({ where: { productId: id } });
+      const validUrls = images.filter((u: string) => u && u.trim());
+      if (validUrls.length > 0) {
+        await tx.productImage.createMany({
+          data: validUrls.map((url: string, i: number) => ({ productId: id, url, sort: i })),
+        });
+      }
+    }
+
+    return updated;
   });
 
   return NextResponse.json({ data: product });

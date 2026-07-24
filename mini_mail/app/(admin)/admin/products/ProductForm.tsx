@@ -27,6 +27,7 @@ interface ProductFormProps {
     isFlashDeal?: boolean;
     flashDealDiscount?: number;
     flashDealEndsAt?: string | null;
+    images?: { url: string; sort: number }[];
   };
 }
 
@@ -47,6 +48,15 @@ export default function ProductForm({ categories, initial }: ProductFormProps) {
     flashDealDiscount: initial?.flashDealDiscount ?? 20,
     flashDealEndsAt: initial?.flashDealEndsAt ?? "",
   });
+  const [extraImages, setExtraImages] = useState<string[]>(
+    initial?.images ? initial.images.filter((i) => i.url !== initial?.imageUrl).map((i) => i.url) : []
+  );
+
+  function addImage() { setExtraImages([...extraImages, ""]); }
+  function updateImage(i: number, val: string) { const next = [...extraImages]; next[i] = val; setExtraImages(next); }
+  function removeImage(i: number) { setExtraImages(extraImages.filter((_, idx) => idx !== i)); }
+
+  const allImages = [form.imageUrl, ...extraImages].filter(Boolean);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -64,7 +74,7 @@ export default function ProductForm({ categories, initial }: ProductFormProps) {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, images: allImages.length > 1 ? allImages : undefined }),
       });
 
       const data = await res.json();
@@ -131,12 +141,31 @@ export default function ProductForm({ categories, initial }: ProductFormProps) {
 
         <div className="mt-4">
           <Input
-            label="图片 URL"
+            label="主图 URL"
             type="url"
             value={form.imageUrl}
             onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
             placeholder="https://..."
           />
+          {/* Extra images */}
+          <div className="mt-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">额外图片</span>
+              <button type="button" onClick={addImage} className="text-xs text-primary-600 hover:text-primary-700">+ 添加</button>
+            </div>
+            {extraImages.map((url, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <Input
+                  type="url"
+                  value={url}
+                  onChange={(e) => updateImage(i, e.target.value)}
+                  placeholder={`额外图片 ${i + 1}`}
+                  className="flex-1"
+                />
+                <button type="button" onClick={() => removeImage(i)} className="shrink-0 text-sm text-danger-500 hover:text-danger-700">删除</button>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="mt-4">

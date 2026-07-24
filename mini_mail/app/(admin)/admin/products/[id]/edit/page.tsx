@@ -9,7 +9,10 @@ export default async function EditProductPage({
 }) {
   const { id } = await params;
   const [product, categories] = await Promise.all([
-    prisma.product.findUnique({ where: { id } }),
+    prisma.product.findUnique({
+      where: { id },
+      include: { images: { orderBy: { sort: "asc" } } },
+    }),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
   ]);
 
@@ -33,6 +36,7 @@ export default async function EditProductPage({
           isFlashDeal: product.isFlashDeal,
           flashDealDiscount: product.flashDealDiscount,
           flashDealEndsAt: product.flashDealEndsAt instanceof Date ? product.flashDealEndsAt.toISOString().slice(0, 16) : "",
+          images: product.images?.map((img) => ({ url: img.url, sort: img.sort })) ?? [],
         }}
       />
     </div>
