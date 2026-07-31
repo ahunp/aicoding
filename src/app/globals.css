@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== 深色金色主题变量 ===== */
+:root {
+  /* 背景 */
+  --bg-primary: #0b0d0e;
+  --bg-card: #1a1d1e;
+  --bg-card-hover: #212527;
+  --bg-elevated: #2a2f31;
+
+  /* 主色（金色） */
+  --color-primary: #f5a623;
+  --color-primary-hover: #ffb84d;
+  --color-primary-light: #ffc94d;
+  --color-primary-deep: #e8863a;
+  --color-primary-soft: rgba(245, 166, 35, 0.12);
+  --color-primary-soft-strong: rgba(245, 166, 35, 0.2);
+  --color-primary-border: rgba(245, 166, 35, 0.35);
+
+  /* 文字 */
+  --text-primary: #e8e6e3;
+  --text-secondary: #b8b5b0;
+  --text-muted: #8a8a8a;
+
+  /* 边框 */
+  --border: rgba(255, 255, 255, 0.09);
+}
+
+/* ===== 全局基础 ===== */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  @apply bg-night-900 font-sans text-ink antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(245, 166, 35, 0.3);
+  color: #fff;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0d0e;
+}
+::-webkit-scrollbar-thumb {
+  background: #2e3335;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f5a623;
+}
+
+/* ===== 通用组件样式 ===== */
+@layer components {
+  .section-title {
+    @apply text-3xl font-bold text-ink md:text-4xl;
+  }
+
+  .section-subtitle {
+    @apply mt-3 text-ink-faint;
+  }
+
+  /* 渐变文字（金色） */
+  .text-gradient {
+    @apply bg-gradient-to-r from-gold via-gold-light to-gold-deep bg-clip-text text-transparent;
+  }
+
+  /* 通用卡片 */
+  .card {
+    @apply rounded-2xl border border-line bg-night-800 shadow-card transition-all duration-300;
+  }
+  .card-hover {
+    @apply hover:-translate-y-1 hover:border-gold-border hover:bg-night-700 hover:shadow-card-hover;
+  }
+
+  /* 区块容器 */
+  .section-container {
+    @apply mx-auto w-full max-w-6xl px-6 md:px-8;
+  }
+
+  /* 渐变光晕装饰 */
+  .glow {
+    @apply pointer-events-none absolute rounded-full blur-[100px];
+  }
+}
